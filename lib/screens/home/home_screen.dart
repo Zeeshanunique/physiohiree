@@ -5,6 +5,9 @@ import '../../models/user.dart';
 import '../../models/appointment.dart';
 import '../../providers/appointment_provider.dart';
 import '../../config/routes.dart';
+import '../profile/edit_profile_screen.dart';
+import '../profile/payment_methods_screen.dart';
+import '../profile/help_support_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -224,64 +227,194 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildDashboardScreen() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Your Dashboard',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 20),
-          
-          // Stats Cards
-          Row(
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.currentUser;
+    
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    return Consumer<AppointmentProvider>(
+      builder: (context, appointmentProvider, child) {
+        // Load user appointments when dashboard is opened
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (appointmentProvider.appointments.isEmpty) {
+            appointmentProvider.loadUserAppointments(user.id, user.userType);
+          }
+        });
+
+        // Calculate real stats from appointments
+        final physioAppointments = appointmentProvider.getPhysiotherapistAppointments(user.id);
+        final completedAppointments = physioAppointments.where((apt) => apt.status == AppointmentStatus.completed).toList();
+        final totalEarnings = completedAppointments.fold(0.0, (sum, apt) => sum + apt.amount);
+        final todayAppointments = appointmentProvider.getTodayAppointmentsForPhysio(user.id);
+        final pendingAppointments = appointmentProvider.getPendingAppointmentsForPhysio(user.id);
+
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _buildStatCard('Total Earnings', '\$2,450', Icons.attach_money),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Your Dashboard',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () {
+                      appointmentProvider.loadUserAppointments(user.id, user.userType);
+                    },
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildStatCard('Appointments', '23', Icons.calendar_today),
+              const SizedBox(height: 20),
+              
+              // Stats Cards with real data
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard('Total Earnings', '\$${totalEarnings.toStringAsFixed(0)}', Icons.attach_money),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildStatCard('Total Appointments', '${physioAppointments.length}', Icons.calendar_today),
+                  ),
+                ],
               ),
-            ],
-          ),
-          
-          const SizedBox(height: 20),
-          
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard('Rating', '4.8', Icons.star),
+              
+              const SizedBox(height: 20),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard('Today\'s Appointments', '${todayAppointments.length}', Icons.today),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildStatCard('Pending Requests', '${pendingAppointments.length}', Icons.pending_actions),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _buildStatCard('Reviews', '45', Icons.reviews),
+
+              const SizedBox(height: 20),
+              
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard('Rating', '${user.rating?.toStringAsFixed(1) ?? '0.0'}', Icons.star),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildStatCard('Reviews', '${user.totalReviews ?? 0}', Icons.reviews),
+                  ),
+                ],
               ),
-            ],
-          ),
-          
-          const SizedBox(height: 30),
-          
-          Text(
-            'Recent Activities',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 12),
-          
-          Expanded(
-            child: ListView(
-              children: [
-                _buildActivityItem('New appointment request from John Doe', '2 hours ago'),
-                _buildActivityItem('Payment received for session with Jane Smith', '1 day ago'),
-                _buildActivityItem('New review received (5 stars)', '2 days ago'),
+              
+              const SizedBox(height: 30),
+              
+              // Pending appointments section
+              if (pendingAppointments.isNotEmpty) ...[
+                Text(
+                  'Pending Appointment Requests',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: pendingAppointments.length,
+                    itemBuilder: (context, index) {
+                      final appointment = pendingAppointments[index];
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: ListTile(
+                          leading: const Icon(Icons.schedule, color: Colors.orange),
+                          title: Text('Appointment Request'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${appointment.appointmentDate.day}/${appointment.appointmentDate.month} at ${appointment.appointmentTime}'),
+                              Text('${_getAppointmentTypeText(appointment.type)} - \$${appointment.amount.toStringAsFixed(0)}'),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.check, color: Colors.green),
+                                onPressed: () => _acceptAppointment(appointment.id, appointmentProvider),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, color: Colors.red),
+                                onPressed: () => _rejectAppointment(appointment.id, appointmentProvider),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ] else ...[
+                Text(
+                  'Recent Activities',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+                
+                Expanded(
+                  child: completedAppointments.isNotEmpty 
+                    ? ListView.builder(
+                        itemCount: completedAppointments.length,
+                        itemBuilder: (context, index) {
+                          final appointment = completedAppointments[index];
+                          return _buildActivityItem(
+                            'Completed appointment - ${_getAppointmentTypeText(appointment.type)}',
+                            '${appointment.appointmentDate.day}/${appointment.appointmentDate.month}',
+                          );
+                        },
+                      )
+                    : const Center(
+                        child: Text('No recent activities'),
+                      ),
+                ),
               ],
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  void _acceptAppointment(String appointmentId, AppointmentProvider provider) async {
+    final success = await provider.acceptAppointment(appointmentId);
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Appointment accepted successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to accept appointment: ${provider.error}')),
+      );
+    }
+  }
+
+  void _rejectAppointment(String appointmentId, AppointmentProvider provider) async {
+    final success = await provider.rejectAppointment(appointmentId, 'Rejected by physiotherapist');
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Appointment rejected')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to reject appointment: ${provider.error}')),
+      );
+    }
   }
 
   Widget _buildAppointmentsScreen() {
@@ -437,12 +570,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Expanded(
                 child: ListView(
                   children: [
-                    _buildProfileOption(Icons.person, 'Edit Profile', () {}),
-                    _buildProfileOption(Icons.notifications, 'Notifications', () {}),
-                    _buildProfileOption(Icons.payment, 'Payment Methods', () {}),
-                    _buildProfileOption(Icons.help, 'Help & Support', () {}),
-                    _buildProfileOption(Icons.privacy_tip, 'Privacy Policy', () {}),
-                    _buildProfileOption(Icons.info, 'About', () {}),
+                    _buildProfileOption(
+                      Icons.person, 
+                      'Edit Profile', 
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const EditProfileScreen()),
+                      ),
+                    ),
+                    _buildProfileOption(Icons.notifications, 'Notifications', () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Notifications feature coming soon!')),
+                      );
+                    }),
+                    _buildProfileOption(
+                      Icons.payment, 
+                      'Payment Methods', 
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()),
+                      ),
+                    ),
+                    _buildProfileOption(
+                      Icons.help, 
+                      'Help & Support', 
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const HelpSupportScreen()),
+                      ),
+                    ),
+                    _buildProfileOption(Icons.privacy_tip, 'Privacy Policy', () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Privacy Policy coming soon!')),
+                      );
+                    }),
+                    _buildProfileOption(Icons.info, 'About', () {
+                      _showAboutDialog(context);
+                    }),
                     const Divider(),
                     _buildProfileOption(
                       Icons.logout, 
@@ -506,7 +667,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return ActionChip(
       label: Text(text),
       onPressed: () {
-        // Filter physiotherapists by specialization
+        final appointmentProvider = Provider.of<AppointmentProvider>(context, listen: false);
+        appointmentProvider.loadPhysiotherapists(specialization: text);
       },
     );
   }
@@ -619,16 +781,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _performSearch(String query, AppointmentProvider appointmentProvider) {
-    appointmentProvider.searchPhysiotherapists(query);
+    if (query.isEmpty) {
+      appointmentProvider.loadPhysiotherapists();
+    } else {
+      // Filter existing physiotherapists by the search query
+      final filteredPhysios = appointmentProvider.searchPhysiotherapists(query);
+      // The search method in provider will handle the filtering
+      appointmentProvider.notifyListeners();
+    }
   }
 
   void _showQuickAppointmentDialog(BuildContext context) {
+    final appointmentProvider = Provider.of<AppointmentProvider>(context, listen: false);
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Quick Appointment'),
-          content: const Text('Would you like to create a new appointment?'),
+          title: const Text('Create New Appointment'),
+          content: const Text('Choose a physiotherapist to book an appointment with:'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -637,10 +808,69 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // Navigate to appointment creation screen
-                Navigator.of(context).pushNamed(AppRoutes.booking);
+                // Check if there are any physiotherapists available
+                if (appointmentProvider.physiotherapists.isNotEmpty) {
+                  // Show list of physiotherapists to choose from
+                  _showPhysiotherapistSelectionDialog(context);
+                } else {
+                  // Load physiotherapists first
+                  appointmentProvider.loadPhysiotherapists().then((_) {
+                    if (appointmentProvider.physiotherapists.isNotEmpty) {
+                      _showPhysiotherapistSelectionDialog(context);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No physiotherapists available')),
+                      );
+                    }
+                  });
+                }
               },
-              child: const Text('Create Appointment'),
+              child: const Text('Choose Physiotherapist'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPhysiotherapistSelectionDialog(BuildContext context) {
+    final appointmentProvider = Provider.of<AppointmentProvider>(context, listen: false);
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Physiotherapist'),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300,
+            child: ListView.builder(
+              itemCount: appointmentProvider.physiotherapists.length,
+              itemBuilder: (context, index) {
+                final physio = appointmentProvider.physiotherapists[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: Text(physio.name[0].toUpperCase()),
+                  ),
+                  title: Text(physio.name),
+                  subtitle: Text(physio.specialization ?? 'Physiotherapist'),
+                  trailing: Text('\$${physio.hourlyRate?.toStringAsFixed(0) ?? '0'}/hr'),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushNamed(
+                      AppRoutes.booking,
+                      arguments: {'physiotherapist': physio},
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
             ),
           ],
         );
@@ -1113,6 +1343,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               },
               child: const Text('Logout'),
             ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AboutDialog(
+          applicationName: 'PhysioHire',
+          applicationVersion: '1.0.0',
+          applicationIcon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              Icons.health_and_safety,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
+          children: const [
+            Text('Your comprehensive physiotherapy platform connecting patients with certified physiotherapists.'),
+            SizedBox(height: 16),
+            Text('© 2024 PhysioHire Team. All rights reserved.'),
           ],
         );
       },

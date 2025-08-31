@@ -249,25 +249,37 @@ class AppointmentProvider extends ChangeNotifier {
 
   // Search physiotherapists by specialization
   List<User> searchPhysiotherapists(String query) {
-    if (query.isEmpty) return _physiotherapists;
+    if (query.isEmpty) {
+      return _physiotherapists;
+    }
 
-    return _physiotherapists.where((physio) {
+    final filtered = _physiotherapists.where((physio) {
       return physio.name.toLowerCase().contains(query.toLowerCase()) ||
-          physio.specialization?.toLowerCase().contains(query.toLowerCase()) ==
-              true ||
-          physio.bio?.toLowerCase().contains(query.toLowerCase()) == true;
+          (physio.specialization?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+          (physio.bio?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+          (physio.qualifications?.toLowerCase().contains(query.toLowerCase()) ?? false);
     }).toList();
+
+    // Update the displayed list
+    _physiotherapists = filtered.isEmpty ? _physiotherapists : filtered;
+    return filtered;
   }
 
-  // Filter physiotherapists by specialization
-  List<User> filterBySpecialization(String specialization) {
-    if (specialization.isEmpty) return _physiotherapists;
+  // Filter physiotherapists by specialization and update display
+  Future<void> filterBySpecialization(String specialization) async {
+    _setLoading(true);
+    _clearError();
 
-    return _physiotherapists.where((physio) {
-      return physio.specialization?.toLowerCase() ==
-          specialization.toLowerCase();
-    }).toList();
+    try {
+      await loadPhysiotherapists(specialization: specialization);
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
+
 
   // Filter physiotherapists by price range
   List<User> filterByPriceRange(double minPrice, double maxPrice) {
