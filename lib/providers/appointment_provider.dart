@@ -35,9 +35,11 @@ class AppointmentProvider extends ChangeNotifier {
     final userAppointments = getAppointmentsForUser(userId, isPatient);
     final now = DateTime.now();
     return userAppointments
-        .where((apt) =>
-            apt.status == AppointmentStatus.confirmed &&
-            apt.appointmentDate.isAfter(now))
+        .where(
+          (apt) =>
+              apt.status == AppointmentStatus.confirmed &&
+              apt.appointmentDate.isAfter(now),
+        )
         .toList();
   }
 
@@ -97,15 +99,16 @@ class AppointmentProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      final appointmentIndex =
-          _appointments.indexWhere((apt) => apt.id == appointmentId);
+      final appointmentIndex = _appointments.indexWhere(
+        (apt) => apt.id == appointmentId,
+      );
       if (appointmentIndex != -1) {
-        _appointments[appointmentIndex] =
-            _appointments[appointmentIndex].copyWith(
-          status: AppointmentStatus.cancelled,
-          cancellationReason: reason,
-          updatedAt: DateTime.now(),
-        );
+        _appointments[appointmentIndex] = _appointments[appointmentIndex]
+            .copyWith(
+              status: AppointmentStatus.cancelled,
+              cancellationReason: reason,
+              updatedAt: DateTime.now(),
+            );
         notifyListeners();
         return true;
       }
@@ -121,21 +124,25 @@ class AppointmentProvider extends ChangeNotifier {
 
   // Reschedule appointment
   Future<bool> rescheduleAppointment(
-      String appointmentId, DateTime newDate, String newTime) async {
+    String appointmentId,
+    DateTime newDate,
+    String newTime,
+  ) async {
     _setLoading(true);
     _clearError();
 
     try {
-      final appointmentIndex =
-          _appointments.indexWhere((apt) => apt.id == appointmentId);
+      final appointmentIndex = _appointments.indexWhere(
+        (apt) => apt.id == appointmentId,
+      );
       if (appointmentIndex != -1) {
-        _appointments[appointmentIndex] =
-            _appointments[appointmentIndex].copyWith(
-          appointmentDate: newDate,
-          appointmentTime: newTime,
-          status: AppointmentStatus.rescheduled,
-          updatedAt: DateTime.now(),
-        );
+        _appointments[appointmentIndex] = _appointments[appointmentIndex]
+            .copyWith(
+              appointmentDate: newDate,
+              appointmentTime: newTime,
+              status: AppointmentStatus.rescheduled,
+              updatedAt: DateTime.now(),
+            );
         notifyListeners();
         return true;
       }
@@ -151,19 +158,19 @@ class AppointmentProvider extends ChangeNotifier {
 
   // Update appointment status
   Future<bool> updateAppointmentStatus(
-      String appointmentId, AppointmentStatus newStatus) async {
+    String appointmentId,
+    AppointmentStatus newStatus,
+  ) async {
     _setLoading(true);
     _clearError();
 
     try {
-      final appointmentIndex =
-          _appointments.indexWhere((apt) => apt.id == appointmentId);
+      final appointmentIndex = _appointments.indexWhere(
+        (apt) => apt.id == appointmentId,
+      );
       if (appointmentIndex != -1) {
-        _appointments[appointmentIndex] =
-            _appointments[appointmentIndex].copyWith(
-          status: newStatus,
-          updatedAt: DateTime.now(),
-        );
+        _appointments[appointmentIndex] = _appointments[appointmentIndex]
+            .copyWith(status: newStatus, updatedAt: DateTime.now());
         notifyListeners();
         return true;
       }
@@ -201,8 +208,10 @@ class AppointmentProvider extends ChangeNotifier {
     _clearError();
 
     try {
-      _appointments = await _databaseService.getUserAppointments(userId,
-          userType: userType);
+      _appointments = await _databaseService.getUserAppointments(
+        userId,
+        userType: userType,
+      );
       notifyListeners();
     } catch (e) {
       _error = e.toString();
@@ -222,9 +231,11 @@ class AppointmentProvider extends ChangeNotifier {
   // Get pending appointments for physiotherapist
   List<Appointment> getPendingAppointmentsForPhysio(String physioId) {
     return _appointments
-        .where((apt) =>
-            apt.physiotherapistId == physioId &&
-            apt.status == AppointmentStatus.pending)
+        .where(
+          (apt) =>
+              apt.physiotherapistId == physioId &&
+              apt.status == AppointmentStatus.pending,
+        )
         .toList();
   }
 
@@ -232,18 +243,22 @@ class AppointmentProvider extends ChangeNotifier {
   List<Appointment> getTodayAppointmentsForPhysio(String physioId) {
     final today = DateTime.now();
     return _appointments
-        .where((apt) =>
-            apt.physiotherapistId == physioId &&
-            apt.appointmentDate.year == today.year &&
-            apt.appointmentDate.month == today.month &&
-            apt.appointmentDate.day == today.day)
+        .where(
+          (apt) =>
+              apt.physiotherapistId == physioId &&
+              apt.appointmentDate.year == today.year &&
+              apt.appointmentDate.month == today.month &&
+              apt.appointmentDate.day == today.day,
+        )
         .toList();
   }
 
   // Accept appointment (for physiotherapists)
   Future<bool> acceptAppointment(String appointmentId) async {
     return await updateAppointmentStatus(
-        appointmentId, AppointmentStatus.confirmed);
+      appointmentId,
+      AppointmentStatus.confirmed,
+    );
   }
 
   // Reject appointment (for physiotherapists)
@@ -254,7 +269,9 @@ class AppointmentProvider extends ChangeNotifier {
   // Complete appointment (for physiotherapists)
   Future<bool> completeAppointment(String appointmentId) async {
     return await updateAppointmentStatus(
-        appointmentId, AppointmentStatus.completed);
+      appointmentId,
+      AppointmentStatus.completed,
+    );
   }
 
   // Search physiotherapists by specialization
@@ -386,13 +403,17 @@ class AppointmentProvider extends ChangeNotifier {
 
   // Update invoice status
   Future<bool> updateInvoiceStatus(
-      String invoiceId, InvoiceStatus status) async {
+    String invoiceId,
+    InvoiceStatus status,
+  ) async {
     _setLoading(true);
     _clearError();
 
     try {
-      final updatedInvoice =
-          await _databaseService.updateInvoiceStatus(invoiceId, status);
+      final updatedInvoice = await _databaseService.updateInvoiceStatus(
+        invoiceId,
+        status,
+      );
 
       // Update local invoice list
       final index = _invoices.indexWhere((invoice) => invoice.id == invoiceId);
@@ -423,14 +444,17 @@ class AppointmentProvider extends ChangeNotifier {
 
   // Confirm appointment and generate invoice
   Future<bool> confirmAppointmentAndGenerateInvoice(
-      String appointmentId) async {
+    String appointmentId,
+  ) async {
     _setLoading(true);
     _clearError();
 
     try {
       // First confirm the appointment
       final success = await updateAppointmentStatus(
-          appointmentId, AppointmentStatus.confirmed);
+        appointmentId,
+        AppointmentStatus.confirmed,
+      );
 
       if (success) {
         // Then generate invoice
