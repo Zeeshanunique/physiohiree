@@ -4,6 +4,7 @@ import '../../models/user.dart';
 import '../../models/appointment.dart';
 import '../../providers/appointment_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../invoice/invoice_screen.dart';
 
 class BookingScreen extends StatefulWidget {
   final User physiotherapist;
@@ -482,12 +483,39 @@ class _BookingScreenState extends State<BookingScreen> {
       );
 
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Appointment booked successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        // Generate invoice for the appointment
+        final appointment = appointmentProvider.appointments.last;
+        final invoice = await appointmentProvider
+            .generateInvoiceForAppointment(appointment.id);
+
+        if (invoice != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Appointment booked successfully! Invoice: ${invoice.id}'),
+              backgroundColor: Colors.green,
+              action: SnackBarAction(
+                label: 'View Invoice',
+                textColor: Colors.white,
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          InvoiceScreen(invoiceId: invoice.id),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Appointment booked successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
 
         // Navigate back
         Navigator.of(context).pop();

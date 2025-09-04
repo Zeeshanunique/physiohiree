@@ -1,5 +1,3 @@
-import 'user.dart';
-
 enum AppointmentType {
   homeVisit,
   clinicSession,
@@ -32,6 +30,7 @@ class Appointment {
   final String? meetingLink; // For virtual consultations
   final String? address; // For home visits
   final String? clinicName; // For clinic sessions
+  final String? invoiceId; // Associated invoice ID
 
   const Appointment({
     required this.id,
@@ -51,6 +50,7 @@ class Appointment {
     this.meetingLink,
     this.address,
     this.clinicName,
+    this.invoiceId,
   });
 
   Map<String, dynamic> toJson() {
@@ -72,6 +72,7 @@ class Appointment {
       'meetingLink': meetingLink,
       'address': address,
       'clinicName': clinicName,
+      'invoiceId': invoiceId,
     };
   }
 
@@ -99,6 +100,7 @@ class Appointment {
       meetingLink: json['meetingLink'],
       address: json['address'],
       clinicName: json['clinicName'],
+      invoiceId: json['invoiceId'],
     );
   }
 
@@ -120,6 +122,7 @@ class Appointment {
     String? meetingLink,
     String? address,
     String? clinicName,
+    String? invoiceId,
   }) {
     return Appointment(
       id: id ?? this.id,
@@ -139,6 +142,7 @@ class Appointment {
       meetingLink: meetingLink ?? this.meetingLink,
       address: address ?? this.address,
       clinicName: clinicName ?? this.clinicName,
+      invoiceId: invoiceId ?? this.invoiceId,
     );
   }
 }

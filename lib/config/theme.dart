@@ -96,19 +96,97 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      colorScheme: const ColorScheme.light(
+      colorScheme: ColorScheme.light(
         primary: primaryColor,
         secondary: secondaryColor,
         surface: surfaceColor,
+        background: backgroundColor,
         error: errorColor,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: textColor,
+        onBackground: textColor,
         onError: Colors.white,
       ),
       
       // Text Theme with Google Fonts
-      textTheme: textTheme,
+      textTheme: GoogleFonts.interTextTheme().copyWith(
+        displayLarge: GoogleFonts.inter(
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+        displayMedium: GoogleFonts.inter(
+          fontSize: 28,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+        displaySmall: GoogleFonts.inter(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        headlineLarge: GoogleFonts.inter(
+          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        headlineMedium: GoogleFonts.inter(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        headlineSmall: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        titleLarge: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+        ),
+        titleMedium: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: textColor,
+        ),
+        titleSmall: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: textColor,
+        ),
+        bodyLarge: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.normal,
+          color: textColor,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.normal,
+          color: textColor,
+        ),
+        bodySmall: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.normal,
+          color: textSecondaryColor,
+        ),
+        labelLarge: GoogleFonts.inter(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: textColor,
+        ),
+        labelMedium: GoogleFonts.inter(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: textColor,
+        ),
+        labelSmall: GoogleFonts.inter(
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+          color: textSecondaryColor,
+        ),
+      ),
 
       // App Bar Theme
       appBarTheme: AppBarTheme(
@@ -130,7 +208,7 @@ class AppTheme {
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
           elevation: 2,
-          shadowColor: primaryColor.withValues(alpha: 0.3),
+          shadowColor: primaryColor.withOpacity(0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -242,7 +320,7 @@ class AppTheme {
       // Chip Theme
       chipTheme: ChipThemeData(
         backgroundColor: backgroundColor,
-        selectedColor: primaryColor.withValues(alpha: 0.1),
+        selectedColor: primaryColor.withOpacity(0.1),
         labelStyle: GoogleFonts.inter(
           fontSize: 12,
           fontWeight: FontWeight.w500,
@@ -291,7 +369,7 @@ class AppRadius {
 class AppShadows {
   static List<BoxShadow> get light => [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.05),
+      color: Colors.black.withOpacity(0.05),
       blurRadius: 8,
       offset: const Offset(0, 2),
     ),
@@ -299,7 +377,7 @@ class AppShadows {
 
   static List<BoxShadow> get medium => [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.1),
+      color: Colors.black.withOpacity(0.1),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),
@@ -307,7 +385,7 @@ class AppShadows {
 
   static List<BoxShadow> get heavy => [
     BoxShadow(
-      color: Colors.black.withValues(alpha: 0.15),
+      color: Colors.black.withOpacity(0.15),
       blurRadius: 24,
       offset: const Offset(0, 8),
     ),

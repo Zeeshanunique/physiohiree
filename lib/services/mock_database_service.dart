@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../models/user.dart';
 import '../models/appointment.dart';
+import '../models/invoice.dart';
 import '../models/review.dart' as review_model;
 
 class MockDatabaseService {
@@ -21,7 +22,7 @@ class MockDatabaseService {
       isVerified: true,
       certificates: [
         'Certified Sports Physiotherapist',
-        'Manual Therapy Specialist'
+        'Manual Therapy Specialist',
       ],
       bio:
           'Specialized in sports injuries and rehabilitation. Former team physiotherapist for professional athletes.',
@@ -66,7 +67,7 @@ class MockDatabaseService {
       isVerified: true,
       certificates: [
         'Neuro Physiotherapy Specialist',
-        'Stroke Recovery Certified'
+        'Stroke Recovery Certified',
       ],
       bio:
           'Specialized in stroke recovery and neurological conditions. Compassionate care for complex cases.',
@@ -95,6 +96,159 @@ class MockDatabaseService {
       totalReviews: 43,
       availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'],
       workingHours: '9:00 AM - 4:00 PM',
+    ),
+    User(
+      id: '6',
+      email: 'lisa.garcia@physio.com',
+      name: 'Dr. Lisa Garcia',
+      phone: '+1234567895',
+      userType: UserType.physiotherapist,
+      createdAt: DateTime.now().subtract(const Duration(days: 200)),
+      specialization: 'Geriatric Physiotherapy',
+      experienceYears: 10,
+      hourlyRate: 85.0,
+      qualifications: 'DPT, Geriatric Specialist',
+      licenseNumber: 'PT33333',
+      isVerified: true,
+      certificates: [
+        'Geriatric Physiotherapy Specialist',
+        'Fall Prevention Certified',
+      ],
+      bio:
+          'Specialized in elderly care, fall prevention, and mobility improvement for seniors.',
+      rating: 4.8,
+      totalReviews: 92,
+      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      workingHours: '8:00 AM - 5:00 PM',
+    ),
+    User(
+      id: '7',
+      email: 'robert.lee@physio.com',
+      name: 'Dr. Robert Lee',
+      phone: '+1234567896',
+      userType: UserType.physiotherapist,
+      createdAt: DateTime.now().subtract(const Duration(days: 180)),
+      specialization: 'Cardiopulmonary Physiotherapy',
+      experienceYears: 7,
+      hourlyRate: 90.0,
+      qualifications: 'DPT, Cardiopulmonary Specialist',
+      licenseNumber: 'PT44444',
+      isVerified: true,
+      certificates: [
+        'Cardiopulmonary Specialist',
+        'ICU Physiotherapy Certified',
+      ],
+      bio:
+          'Expert in respiratory and cardiac rehabilitation, helping patients recover from heart and lung conditions.',
+      rating: 4.9,
+      totalReviews: 78,
+      availableDays: ['Monday', 'Wednesday', 'Friday', 'Saturday'],
+      workingHours: '7:00 AM - 6:00 PM',
+    ),
+    User(
+      id: '8',
+      email: 'maria.rodriguez@physio.com',
+      name: 'Dr. Maria Rodriguez',
+      phone: '+1234567897',
+      userType: UserType.physiotherapist,
+      createdAt: DateTime.now().subtract(const Duration(days: 150)),
+      specialization: 'Women\'s Health Physiotherapy',
+      experienceYears: 6,
+      hourlyRate: 75.0,
+      qualifications: 'DPT, Women\'s Health Specialist',
+      licenseNumber: 'PT55555',
+      isVerified: true,
+      certificates: ['Women\'s Health Specialist', 'Pelvic Floor Certified'],
+      bio:
+          'Specialized in women\'s health issues including pregnancy-related pain and pelvic floor disorders.',
+      rating: 4.7,
+      totalReviews: 56,
+      availableDays: ['Tuesday', 'Wednesday', 'Thursday', 'Saturday'],
+      workingHours: '9:00 AM - 7:00 PM',
+    ),
+    User(
+      id: '9',
+      email: 'david.kim@physio.com',
+      name: 'Dr. David Kim',
+      phone: '+1234567898',
+      userType: UserType.physiotherapist,
+      createdAt: DateTime.now().subtract(const Duration(days: 120)),
+      specialization: 'Vestibular Physiotherapy',
+      experienceYears: 8,
+      hourlyRate: 88.0,
+      qualifications: 'DPT, Vestibular Specialist',
+      licenseNumber: 'PT66666',
+      isVerified: true,
+      certificates: ['Vestibular Specialist', 'Balance Disorders Certified'],
+      bio:
+          'Expert in treating dizziness, vertigo, and balance disorders with specialized vestibular rehabilitation.',
+      rating: 4.8,
+      totalReviews: 67,
+      availableDays: ['Monday', 'Tuesday', 'Thursday', 'Friday'],
+      workingHours: '8:30 AM - 5:30 PM',
+    ),
+    User(
+      id: '10',
+      email: 'jennifer.white@physio.com',
+      name: 'Dr. Jennifer White',
+      phone: '+1234567899',
+      userType: UserType.physiotherapist,
+      createdAt: DateTime.now().subtract(const Duration(days: 100)),
+      specialization: 'Aquatic Physiotherapy',
+      experienceYears: 5,
+      hourlyRate: 72.0,
+      qualifications: 'DPT, Aquatic Therapy Specialist',
+      licenseNumber: 'PT77777',
+      isVerified: true,
+      certificates: ['Aquatic Therapy Specialist', 'Hydrotherapy Certified'],
+      bio:
+          'Specialized in water-based therapy for pain relief and rehabilitation in a low-impact environment.',
+      rating: 4.6,
+      totalReviews: 45,
+      availableDays: ['Monday', 'Wednesday', 'Friday', 'Sunday'],
+      workingHours: '10:00 AM - 6:00 PM',
+    ),
+    User(
+      id: '11',
+      email: 'alex.chen@physio.com',
+      name: 'Dr. Alex Chen',
+      phone: '+1234567800',
+      userType: UserType.physiotherapist,
+      createdAt: DateTime.now().subtract(const Duration(days: 80)),
+      specialization: 'Hand Therapy',
+      experienceYears: 9,
+      hourlyRate: 95.0,
+      qualifications: 'DPT, Hand Therapy Specialist',
+      licenseNumber: 'PT88888',
+      isVerified: true,
+      certificates: ['Hand Therapy Specialist', 'Splinting Certified'],
+      bio:
+          'Expert in hand and upper extremity rehabilitation, treating complex hand injuries and conditions.',
+      rating: 4.9,
+      totalReviews: 89,
+      availableDays: ['Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      workingHours: '8:00 AM - 5:00 PM',
+    ),
+    User(
+      id: '12',
+      email: 'sophie.martin@physio.com',
+      name: 'Dr. Sophie Martin',
+      phone: '+1234567801',
+      userType: UserType.physiotherapist,
+      createdAt: DateTime.now().subtract(const Duration(days: 60)),
+      specialization: 'Lymphatic Physiotherapy',
+      experienceYears: 4,
+      hourlyRate: 68.0,
+      qualifications: 'DPT, Lymphatic Specialist',
+      licenseNumber: 'PT99999',
+      isVerified: true,
+      certificates: ['Lymphatic Drainage Specialist', 'Lymphedema Certified'],
+      bio:
+          'Specialized in lymphatic drainage and lymphedema management for post-surgical and cancer patients.',
+      rating: 4.5,
+      totalReviews: 34,
+      availableDays: ['Monday', 'Tuesday', 'Thursday', 'Saturday'],
+      workingHours: '9:00 AM - 5:00 PM',
     ),
   ];
 
@@ -130,6 +284,28 @@ class MockDatabaseService {
     ),
   ];
 
+  // Mock invoices
+  static final List<Invoice> _mockInvoices = [
+    Invoice(
+      id: 'INV-20241201-0001',
+      appointmentId: 'apt1',
+      patientId: '1',
+      physiotherapistId: '2',
+      patientName: 'John Doe',
+      physiotherapistName: 'Dr. Sarah Wilson',
+      appointmentDate: DateTime.now().add(const Duration(days: 2)),
+      appointmentTime: '10:00 AM',
+      appointmentType: AppointmentType.homeVisit,
+      amount: 80.0,
+      taxAmount: 8.0,
+      totalAmount: 88.0,
+      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+      notes: 'Knee pain after running',
+      address: '123 Main St, City, State',
+      status: InvoiceStatus.pending,
+    ),
+  ];
+
   // Mock reviews
   static final List<review_model.Review> _mockReviews = [
     review_model.Review(
@@ -157,11 +333,13 @@ class MockDatabaseService {
 
     if (specialization != null && specialization.isNotEmpty) {
       filtered = filtered
-          .where((physio) =>
-              physio.specialization
-                  ?.toLowerCase()
-                  .contains(specialization.toLowerCase()) ??
-              false)
+          .where(
+            (physio) =>
+                physio.specialization?.toLowerCase().contains(
+                  specialization.toLowerCase(),
+                ) ??
+                false,
+          )
           .toList();
     }
 
@@ -169,11 +347,13 @@ class MockDatabaseService {
       // For now, we'll filter by working hours as a proxy for location
       // In a real app, you'd have a location field
       filtered = filtered
-          .where((physio) =>
-              physio.workingHours
-                  ?.toLowerCase()
-                  .contains(location.toLowerCase()) ??
-              false)
+          .where(
+            (physio) =>
+                physio.workingHours?.toLowerCase().contains(
+                  location.toLowerCase(),
+                ) ??
+                false,
+          )
           .toList();
     }
 
@@ -233,8 +413,10 @@ class MockDatabaseService {
     return newAppointment;
   }
 
-  Future<List<Appointment>> getUserAppointments(String userId,
-      {UserType? userType}) async {
+  Future<List<Appointment>> getUserAppointments(
+    String userId, {
+    UserType? userType,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 600));
 
     if (userType == UserType.patient) {
@@ -249,11 +431,14 @@ class MockDatabaseService {
   }
 
   Future<Appointment> updateAppointmentStatus(
-      String appointmentId, AppointmentStatus status) async {
+    String appointmentId,
+    AppointmentStatus status,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
-    final index =
-        _mockAppointments.indexWhere((apt) => apt.id == appointmentId);
+    final index = _mockAppointments.indexWhere(
+      (apt) => apt.id == appointmentId,
+    );
     if (index == -1) {
       throw Exception('Appointment not found');
     }
@@ -267,13 +452,16 @@ class MockDatabaseService {
     return updatedAppointment;
   }
 
-  Future<bool> processPayment(String appointmentId,
-      {required double amount}) async {
+  Future<bool> processPayment(
+    String appointmentId, {
+    required double amount,
+  }) async {
     // Simulate payment processing
     await Future.delayed(const Duration(milliseconds: 2000));
 
-    final index =
-        _mockAppointments.indexWhere((apt) => apt.id == appointmentId);
+    final index = _mockAppointments.indexWhere(
+      (apt) => apt.id == appointmentId,
+    );
     if (index == -1) {
       throw Exception('Appointment not found');
     }
@@ -323,7 +511,8 @@ class MockDatabaseService {
   }
 
   Future<List<review_model.Review>> getPhysiotherapistReviews(
-      String physiotherapistId) async {
+    String physiotherapistId,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 400));
 
     return _mockReviews
@@ -341,14 +530,16 @@ class MockDatabaseService {
       final averageRating =
           reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
 
-      final index = _mockPhysiotherapists
-          .indexWhere((physio) => physio.id == physiotherapistId);
+      final index = _mockPhysiotherapists.indexWhere(
+        (physio) => physio.id == physiotherapistId,
+      );
       if (index != -1) {
         // In a real app, this would update the database with the new average rating
         // For now, we just calculate it but don't persist it in this mock
         // Using debugPrint instead of print for production code
         debugPrint(
-            'Updated rating for physiotherapist $physiotherapistId: $averageRating');
+          'Updated rating for physiotherapist $physiotherapistId: $averageRating',
+        );
       }
     }
   }
@@ -364,5 +555,118 @@ class MockDatabaseService {
   Future<void> endVideoCall(String sessionId) async {
     await Future.delayed(const Duration(milliseconds: 500));
     // Mock ending video call
+  }
+
+  // Generate invoice for appointment
+  Future<Invoice> generateInvoice(String appointmentId) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+
+    final appointment = _mockAppointments.firstWhere(
+      (apt) => apt.id == appointmentId,
+      orElse: () => throw Exception('Appointment not found'),
+    );
+
+    // Get patient and physiotherapist details
+    final patient = await _getUserById(appointment.patientId);
+    final physiotherapist = await _getUserById(appointment.physiotherapistId);
+
+    if (patient == null || physiotherapist == null) {
+      throw Exception('User not found');
+    }
+
+    final invoice = Invoice.fromAppointment(
+      appointment,
+      patient,
+      physiotherapist,
+    );
+    _mockInvoices.add(invoice);
+
+    // Update appointment with invoice ID
+    final appointmentIndex = _mockAppointments.indexWhere(
+      (apt) => apt.id == appointmentId,
+    );
+    if (appointmentIndex != -1) {
+      _mockAppointments[appointmentIndex] = _mockAppointments[appointmentIndex]
+          .copyWith(invoiceId: invoice.id);
+    }
+
+    return invoice;
+  }
+
+  // Get invoice by ID
+  Future<Invoice?> getInvoice(String invoiceId) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+
+    try {
+      return _mockInvoices.firstWhere((invoice) => invoice.id == invoiceId);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Get invoices for user
+  Future<List<Invoice>> getUserInvoices(
+    String userId,
+    UserType userType,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+
+    if (userType == UserType.patient) {
+      return _mockInvoices
+          .where((invoice) => invoice.patientId == userId)
+          .toList();
+    } else if (userType == UserType.physiotherapist) {
+      return _mockInvoices
+          .where((invoice) => invoice.physiotherapistId == userId)
+          .toList();
+    }
+
+    return [];
+  }
+
+  // Update invoice status
+  Future<Invoice> updateInvoiceStatus(
+    String invoiceId,
+    InvoiceStatus status,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final index = _mockInvoices.indexWhere(
+      (invoice) => invoice.id == invoiceId,
+    );
+    if (index == -1) {
+      throw Exception('Invoice not found');
+    }
+
+    final updatedInvoice = _mockInvoices[index].copyWith(
+      status: status,
+      paidAt: status == InvoiceStatus.paid ? DateTime.now() : null,
+    );
+
+    _mockInvoices[index] = updatedInvoice;
+    return updatedInvoice;
+  }
+
+  // Helper method to get user by ID
+  Future<User?> _getUserById(String userId) async {
+    // This would typically query a user database
+    // For now, we'll return a mock user based on the ID
+    if (userId == '1') {
+      return User(
+        id: '1',
+        email: 'john.doe@example.com',
+        name: 'John Doe',
+        phone: '+1234567890',
+        userType: UserType.patient,
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+      );
+    }
+
+    // Check if it's a physiotherapist
+    try {
+      return _mockPhysiotherapists.firstWhere((physio) => physio.id == userId);
+    } catch (e) {
+      return null;
+    }
   }
 }

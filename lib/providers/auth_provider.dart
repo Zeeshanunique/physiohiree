@@ -4,7 +4,7 @@ import '../services/mock_auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final MockAuthService _authService = MockAuthService();
-
+  
   User? _currentUser;
   bool _isLoading = false;
   String? _error;
@@ -28,7 +28,7 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> login(String email, String password) async {
     _setLoading(true);
     _clearError();
-
+    
     try {
       final user = await _authService.signInWithEmail(email, password);
       _currentUser = user;
@@ -43,11 +43,10 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> signup(String email, String password, String name, String phone,
-      UserType userType) async {
+  Future<bool> signup(String email, String password, String name, String phone, UserType userType) async {
     _setLoading(true);
     _clearError();
-
+    
     try {
       final user = await _authService.signUpWithEmail(
         email: email,
@@ -100,51 +99,6 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> quickLoginAsPhysio() async {
     await login('physio@demo.com', 'demo123');
-  }
-
-  // Create demo users with enhanced profiles
-  Future<void> _createDemoUsers() async {
-    // Demo Patient
-    final demoPatient = User(
-      id: 'demo_patient_1',
-      email: 'patient@demo.com',
-      name: 'John Doe',
-      phone: '+1234567890',
-      userType: UserType.patient,
-      createdAt: DateTime.now(),
-      age: 35,
-      gender: 'Male',
-      address: '123 Main St, City, State',
-      emergencyContact: '+1234567891',
-      medicalHistory: 'Previous sports injury to right knee',
-      ongoingTreatment: 'None currently',
-    );
-
-    // Demo Physiotherapist
-    final demoPhysio = User(
-      id: 'demo_physio_1',
-      email: 'physio@demo.com',
-      name: 'Dr. Sarah Wilson',
-      phone: '+1234567892',
-      userType: UserType.physiotherapist,
-      createdAt: DateTime.now(),
-      specialization: 'Sports Physiotherapy',
-      experienceYears: 8,
-      hourlyRate: 80.0,
-      qualifications: 'DPT, Sports Medicine',
-      licenseNumber: 'PT12345',
-      isVerified: true,
-      rating: 4.8,
-      totalReviews: 45,
-      availableDays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      workingHours: '9:00 AM - 6:00 PM',
-      bio:
-          'Specialized in sports injuries and rehabilitation with 8+ years of experience.',
-    );
-
-    // Store demo users (in a real app, this would be in a database)
-    _currentUser = demoPatient; // For demo purposes, set as current user
-    notifyListeners();
   }
 
   void clearError() {
